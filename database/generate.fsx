@@ -60,12 +60,12 @@ let generateLoadScripts() =
 let searchExternalAssemblies () =
   generateLoadScripts()
   
-  let loadScriptDir = currentDirectory @@ (sprintf @".paket\load\%s\" framework)
+  let loadScriptDir = currentDirectory @@ (IO.Path.Combine(".paket", "load", framework))
   let loadScriptPath = loadScriptDir @@ @"main.group.fsx"
 
   File.ReadAllLines(loadScriptPath)
   |> Array.map (fun line ->
-    let reference = line.Substring(4).TrimEnd('"', ' ')
+    let reference = if line.Length>4 then line.Substring(4).TrimEnd('"', ' ') else line
     if reference.StartsWith(@"..") then
       Path.GetFullPath(loadScriptDir @@ reference)
     elif reference.Contains(",") then
